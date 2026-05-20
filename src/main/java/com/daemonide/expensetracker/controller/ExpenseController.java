@@ -1,9 +1,14 @@
 package com.daemonide.expensetracker.controller;
 
+import com.daemonide.expensetracker.dto.ExpenseRequestDTO;
+import com.daemonide.expensetracker.dto.ExpenseResponseDTO;
+import com.daemonide.expensetracker.exception.ErrorResponse;
+import com.daemonide.expensetracker.exception.NoSuchExpenseExistsException;
 import com.daemonide.expensetracker.model.Category;
-import com.daemonide.expensetracker.model.Expense;
 import com.daemonide.expensetracker.service.ExpenseService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,22 +20,22 @@ public class ExpenseController {
     private ExpenseService expenseService;
 
     @PostMapping
-    public Expense createExpense(@RequestBody Expense expense){
+    public ExpenseResponseDTO createExpense(@Valid @RequestBody ExpenseRequestDTO expense){
         return expenseService.addExpense(expense);
     }
 
     @GetMapping
-    public List<Expense> getExpense(){
+    public List<ExpenseResponseDTO> getExpense(){
         return expenseService.getAllExpense();
     }
 
     @GetMapping("/category/{category}")
-    public List<Expense> getByCategory(@PathVariable Category category){
+    public List<ExpenseResponseDTO> getByCategory(@PathVariable Category category){
         return expenseService.getExpenseByCategory(category);
     }
 
     @GetMapping("/{id}")
-    public Expense getById(@PathVariable long id){
+    public ExpenseResponseDTO getById(@PathVariable long id){
         return expenseService.getExpenseById(id);
     }
 
@@ -40,7 +45,13 @@ public class ExpenseController {
     }
 
     @PutMapping("/{id}")
-    public Expense editExpense(@PathVariable long id,@RequestBody Expense updatedExpense){
+    public ExpenseResponseDTO editExpense(@PathVariable long id,@Valid @RequestBody ExpenseRequestDTO updatedExpense){
         return expenseService.editExpense(id,updatedExpense);
+    }
+
+    @ExceptionHandler(value = NoSuchExpenseExistsException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleNoSuchExpenseExistsException(NoSuchExpenseExistsException e){
+        return new ErrorResponse(HttpStatus.NOT_FOUND.value(),e.getMessage());
     }
 }

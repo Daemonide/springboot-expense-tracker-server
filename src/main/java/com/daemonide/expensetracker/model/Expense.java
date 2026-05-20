@@ -1,20 +1,25 @@
 package com.daemonide.expensetracker.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+import lombok.*;
 
 import java.time.LocalDate;
 
-@Getter @Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class Expense {
     @Id
     @GeneratedValue
     private Long id;
 
+    @NotBlank
     private String title;
 
+    @Positive
     private double amount;
 
     private LocalDate date;
@@ -22,13 +27,4 @@ public class Expense {
     @ManyToOne
     @JoinColumn(name = "category_id")
     Category category;
-
-    public Expense(){}
-
-    public Expense(String title,double amount,LocalDate date,Category category){
-        this.title = title;
-        this.amount = amount;
-        this.date = date;
-        this.category = category;
-    }
 }

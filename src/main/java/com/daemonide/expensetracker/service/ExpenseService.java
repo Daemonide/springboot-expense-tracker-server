@@ -1,11 +1,16 @@
 package com.daemonide.expensetracker.service;
 
+import com.daemonide.expensetracker.dto.ExpenseRequestDTO;
+import com.daemonide.expensetracker.dto.ExpenseResponseDTO;
+import com.daemonide.expensetracker.exception.NoSuchCategoryExistsException;
+import com.daemonide.expensetracker.exception.NoSuchExpenseExistsException;
+import com.daemonide.expensetracker.mapper.ExpenseMapper;
 import com.daemonide.expensetracker.model.Category;
 import com.daemonide.expensetracker.model.Expense;
+import com.daemonide.expensetracker.repository.CategoryRepository;
 import com.daemonide.expensetracker.repository.ExpenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.UrlPathHelper;
 
 import java.util.List;
 
@@ -15,36 +20,41 @@ public class ExpenseService {
     @Autowired
     ExpenseRepository expenseRepository;
     @Autowired
-    private UrlPathHelper urlPathHelper;
+    CategoryRepository categoryRepository;
 
-    public Expense addExpense(Expense expense){
-        return expenseRepository.save(expense);
+    public ExpenseResponseDTO addExpense(ExpenseRequestDTO expense){
+        Category category = categoryRepository.findById(expense.getCategoryId())
+                .orElseThrow(() -> new NoSuchCategoryExistsException("No Category exists with the specified ID"));
+        return ExpenseMapper.toDTO(expenseRepository.save(ExpenseMapper.toEntity(expense,category)));
     }
 
-    public Expense getExpenseById(long id){
-        return expenseRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Id Not Found"));
+    public ExpenseResponseDTO getExpenseById(long id){
+        Expense expense = expenseRepository.findById(id)
+                .orElseThrow(() -> new NoSuchExpenseExistsException("No Expense exists with the specified ID"));
+        return ExpenseMapper.toDTO(expense);
     }
 
-    public List<Expense> getAllExpense(){
-        return expenseRepository.findAll();
+    public List<ExpenseResponseDTO> getAllExpense(){
+        return ExpenseMapper.toDTOList(expenseRepository.findAll());
     }
 
-    public List<Expense> getExpenseByCategory(Category category){
-        return expenseRepository.findByCategory(category);
+    public List<ExpenseResponseDTO> getExpenseByCategory(Category category){
+        return ExpenseMapper.toDTOList(expenseRepository.findByCategory(category));
     }
 
     public void deleteExpense(Long id){
         expenseRepository.deleteById(id);
     }
 
-    public Expense editExpense(long id,Expense updatedExpense){
+    public ExpenseResponseDTO editExpense(long id,ExpenseRequestDTO updatedExpense){
         Expense expense = expenseRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Id not found"));
+                .orElseThrow(() -> new NoSuchExpenseExistsException("No Expense exists with the specified ID"));
         expense.setTitle(updatedExpense.getTitle());
         expense.setAmount(updatedExpense.getAmount());
         expense.setDate(updatedExpense.getDate());
-        expense.setCategory(updatedExpense.getCategory());
-        return expenseRepository.save(expense);
+        Category category = categoryRepository.findById(updatedExpense.getCategoryId())
+                        .orElseThrow(() -> new NoSuchCategoryExistsException("No Category exists with the specified ID"));
+        expense.setCategory(category);
+        return  ExpenseMapper.toDTO(expenseRepository.save(expense));
     }
 }
