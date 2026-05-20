@@ -28,6 +28,11 @@ public class CategoryController {
         return categoryService.getCategoryById(id);
     }
 
+    @PutMapping("/{id}")
+    public Category editById(@PathVariable long id,@RequestBody Category updatedCategory){
+        return categoryService.editCategory(id,updatedCategory);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable long id){
         categoryService.deleteCategoryById(id);

@@ -38,4 +38,9 @@ public class ExpenseController {
     public void deleteById(@PathVariable long id){
         expenseService.deleteExpense(id);
     }
+
+    @PutMapping("/{id}")
+    public Expense editExpense(@PathVariable long id,@RequestBody Expense updatedExpense){
+        return expenseService.editExpense(id,updatedExpense);
+    }
 }

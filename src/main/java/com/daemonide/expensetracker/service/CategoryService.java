@@ -28,4 +28,11 @@ public class CategoryService {
     public void deleteCategoryById(long id){
         categoryRepository.deleteById(id);
     }
+
+    public Category editCategory(long id,Category newCategory){
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Given Id do not exist"));
+        category.setName(newCategory.getName());
+        return categoryRepository.save(category);
+    }
 }
