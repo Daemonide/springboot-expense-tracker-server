@@ -6,7 +6,7 @@ import com.daemonide.expensetracker.exception.ErrorResponse;
 import com.daemonide.expensetracker.exception.NoSuchCategoryExistsException;
 import com.daemonide.expensetracker.service.CategoryService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,9 +14,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/category")
+@RequiredArgsConstructor
 public class CategoryController {
-    @Autowired
-    CategoryService categoryService;
+    private final CategoryService categoryService;
 
     @GetMapping
     public List<CategoryResponseDTO> getCategory(){

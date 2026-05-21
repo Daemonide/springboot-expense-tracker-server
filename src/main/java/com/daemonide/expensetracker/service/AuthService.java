@@ -6,18 +6,17 @@ import com.daemonide.expensetracker.exception.InvalidLoginException;
 import com.daemonide.expensetracker.exception.UserAlreadyExistsException;
 import com.daemonide.expensetracker.model.AppUser;
 import com.daemonide.expensetracker.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder encoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder encoder;
+    private final JwtService jwtService;
 
     public String register(RegisterRequestDTO request){
         if (userRepository.findByUsername(request.getUsername()).isPresent()){
@@ -46,6 +45,6 @@ public class AuthService {
             throw new InvalidLoginException("Invalid Password");
         }
 
-        return "Login Successful";
+        return jwtService.generateToken(user.getUsername());
     }
 }

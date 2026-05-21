@@ -9,18 +9,17 @@ import com.daemonide.expensetracker.model.Category;
 import com.daemonide.expensetracker.model.Expense;
 import com.daemonide.expensetracker.repository.CategoryRepository;
 import com.daemonide.expensetracker.repository.ExpenseRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ExpenseService {
 
-    @Autowired
-    ExpenseRepository expenseRepository;
-    @Autowired
-    CategoryRepository categoryRepository;
+    private final ExpenseRepository expenseRepository;
+    private final CategoryRepository categoryRepository;
 
     public ExpenseResponseDTO addExpense(ExpenseRequestDTO expense){
         Category category = categoryRepository.findById(expense.getCategoryId())

@@ -7,17 +7,18 @@ import com.daemonide.expensetracker.exception.NoSuchExpenseExistsException;
 import com.daemonide.expensetracker.model.Category;
 import com.daemonide.expensetracker.service.ExpenseService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/expense")
 public class ExpenseController {
-    @Autowired
-    private ExpenseService expenseService;
+
+    private final ExpenseService expenseService;
 
     @PostMapping
     public ExpenseResponseDTO createExpense(@Valid @RequestBody ExpenseRequestDTO expense){

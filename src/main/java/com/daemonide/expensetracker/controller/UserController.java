@@ -4,18 +4,18 @@ import com.daemonide.expensetracker.dto.LoginRequestDTO;
 import com.daemonide.expensetracker.dto.RegisterRequestDTO;
 import com.daemonide.expensetracker.exception.ErrorResponse;
 import com.daemonide.expensetracker.exception.InvalidLoginException;
-import com.daemonide.expensetracker.exception.NoSuchCategoryExistsException;
 import com.daemonide.expensetracker.exception.UserAlreadyExistsException;
 import com.daemonide.expensetracker.service.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/auth")
 public class UserController {
-    @Autowired
-    AuthService authService;
+
+    private final AuthService authService;
 
     @PostMapping("/register")
     public String register(@RequestBody RegisterRequestDTO request){

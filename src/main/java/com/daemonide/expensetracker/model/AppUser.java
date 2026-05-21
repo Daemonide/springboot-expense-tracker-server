@@ -1,6 +1,8 @@
 package com.daemonide.expensetracker.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 
+@Getter
 @Setter
 @Entity
 @Table(name = "USERS")
@@ -22,6 +25,7 @@ public class AppUser implements UserDetails {
     private String password;
 
     @Override
+    @NonNull
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return new ArrayList<>();
     }
@@ -34,12 +38,9 @@ public class AppUser implements UserDetails {
 
 
     @Override
+    @NonNull
     public String getUsername() {
         return username;
     }
-    @Override public boolean isAccountNonExpired() { return true; }
-    @Override public boolean isAccountNonLocked() { return true; }
-    @Override public boolean isCredentialsNonExpired() { return true; }
-    @Override public boolean isEnabled() { return true; }
 
 }
