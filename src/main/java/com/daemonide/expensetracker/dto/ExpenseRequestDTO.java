@@ -6,7 +6,8 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Getter @Setter
+@Getter
+@Setter
 @JsonPropertyOrder({
         "title",
         "amount",

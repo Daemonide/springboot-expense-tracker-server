@@ -8,7 +8,7 @@ import com.daemonide.expensetracker.model.Expense;
 import java.util.List;
 
 public class ExpenseMapper {
-    public static Expense toEntity(ExpenseRequestDTO dto,Category category){
+    public static Expense toEntity(ExpenseRequestDTO dto, Category category) {
         Expense expense = new Expense();
         expense.setTitle(dto.getTitle());
         expense.setAmount(dto.getAmount());
@@ -17,7 +17,7 @@ public class ExpenseMapper {
         return expense;
     }
 
-    public static ExpenseResponseDTO toDTO(Expense expense){
+    public static ExpenseResponseDTO toDTO(Expense expense) {
         ExpenseResponseDTO dto = new ExpenseResponseDTO();
         dto.setExpenseID(expense.getId());
         dto.setTitle(expense.getTitle());
@@ -28,7 +28,7 @@ public class ExpenseMapper {
         return dto;
     }
 
-    public static List<ExpenseResponseDTO> toDTOList(List<Expense> expenses){
+    public static List<ExpenseResponseDTO> toDTOList(List<Expense> expenses) {
         return expenses.stream()
                 .map(ExpenseMapper::toDTO)
                 .toList();

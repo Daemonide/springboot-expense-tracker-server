@@ -18,24 +18,24 @@ public class UserController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public String register(@RequestBody RegisterRequestDTO request){
+    public String register(@RequestBody RegisterRequestDTO request) {
         return authService.register(request);
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequestDTO request){
+    public String login(@RequestBody LoginRequestDTO request) {
         return authService.login(request);
     }
 
     @ExceptionHandler(value = InvalidLoginException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ErrorResponse handleInvalidLoginException(InvalidLoginException e){
-        return new ErrorResponse(HttpStatus.UNAUTHORIZED.value(),e.getMessage());
+    public ErrorResponse handleInvalidLoginException(InvalidLoginException e) {
+        return new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
     }
 
     @ExceptionHandler(value = UserAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleUserAlreadyExistsException(UserAlreadyExistsException e){
-        return new ErrorResponse(HttpStatus.CONFLICT.value(),e.getMessage());
+    public ErrorResponse handleUserAlreadyExistsException(UserAlreadyExistsException e) {
+        return new ErrorResponse(HttpStatus.CONFLICT.value(), e.getMessage());
     }
 }

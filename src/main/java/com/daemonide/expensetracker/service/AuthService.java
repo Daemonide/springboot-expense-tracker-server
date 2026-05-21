@@ -18,8 +18,8 @@ public class AuthService {
     private final PasswordEncoder encoder;
     private final JwtService jwtService;
 
-    public String register(RegisterRequestDTO request){
-        if (userRepository.findByUsername(request.getUsername()).isPresent()){
+    public String register(RegisterRequestDTO request) {
+        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new UserAlreadyExistsException("This username is taken");
         }
 
@@ -31,7 +31,7 @@ public class AuthService {
         return "User Registered";
     }
 
-    public String login(LoginRequestDTO request){
+    public String login(LoginRequestDTO request) {
 
         AppUser user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new InvalidLoginException("Invalid Username"));
@@ -41,7 +41,7 @@ public class AuthService {
                 user.getPassword()
         );
 
-        if (!matches){
+        if (!matches) {
             throw new InvalidLoginException("Invalid Password");
         }
 

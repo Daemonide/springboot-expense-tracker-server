@@ -21,38 +21,38 @@ public class ExpenseController {
     private final ExpenseService expenseService;
 
     @PostMapping
-    public ExpenseResponseDTO createExpense(@Valid @RequestBody ExpenseRequestDTO expense){
+    public ExpenseResponseDTO createExpense(@Valid @RequestBody ExpenseRequestDTO expense) {
         return expenseService.addExpense(expense);
     }
 
     @GetMapping
-    public List<ExpenseResponseDTO> getExpense(){
+    public List<ExpenseResponseDTO> getExpense() {
         return expenseService.getAllExpense();
     }
 
     @GetMapping("/category/{category}")
-    public List<ExpenseResponseDTO> getByCategory(@PathVariable Category category){
+    public List<ExpenseResponseDTO> getByCategory(@PathVariable Category category) {
         return expenseService.getExpenseByCategory(category);
     }
 
     @GetMapping("/{id}")
-    public ExpenseResponseDTO getById(@PathVariable long id){
+    public ExpenseResponseDTO getById(@PathVariable long id) {
         return expenseService.getExpenseById(id);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable long id){
+    public void deleteById(@PathVariable long id) {
         expenseService.deleteExpense(id);
     }
 
     @PutMapping("/{id}")
-    public ExpenseResponseDTO editExpense(@PathVariable long id,@Valid @RequestBody ExpenseRequestDTO updatedExpense){
-        return expenseService.editExpense(id,updatedExpense);
+    public ExpenseResponseDTO editExpense(@PathVariable long id, @Valid @RequestBody ExpenseRequestDTO updatedExpense) {
+        return expenseService.editExpense(id, updatedExpense);
     }
 
     @ExceptionHandler(value = NoSuchExpenseExistsException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNoSuchExpenseExistsException(NoSuchExpenseExistsException e){
-        return new ErrorResponse(HttpStatus.NOT_FOUND.value(),e.getMessage());
+    public ErrorResponse handleNoSuchExpenseExistsException(NoSuchExpenseExistsException e) {
+        return new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.getMessage());
     }
 }
