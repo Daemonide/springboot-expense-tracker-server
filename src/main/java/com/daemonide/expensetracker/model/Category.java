@@ -1,8 +1,6 @@
 package com.daemonide.expensetracker.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,9 +15,13 @@ import lombok.Setter;
 public class Category {
     @Id
     @GeneratedValue
-    private Long category_id;
+    private Long id;
 
     @NotBlank
     private String name;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private AppUser user;
 
 }

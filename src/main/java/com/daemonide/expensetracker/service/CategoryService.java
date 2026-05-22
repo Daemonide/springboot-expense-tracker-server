@@ -4,6 +4,7 @@ import com.daemonide.expensetracker.dto.CategoryRequestDTO;
 import com.daemonide.expensetracker.dto.CategoryResponseDTO;
 import com.daemonide.expensetracker.exception.NoSuchCategoryExistsException;
 import com.daemonide.expensetracker.mapper.CategoryMapper;
+import com.daemonide.expensetracker.model.AppUser;
 import com.daemonide.expensetracker.model.Category;
 import com.daemonide.expensetracker.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,29 +16,39 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryService {
     private final CategoryRepository categoryRepository;
+    private final CustomUserDetailsService userDetailsService;
 
     public List<CategoryResponseDTO> getAllCategory() {
-        return CategoryMapper.toDTOList(categoryRepository.findAll());
+        AppUser currentUser = userDetailsService.getCurrentUser();
+        return CategoryMapper.toDTOList(categoryRepository.findByUser(currentUser));
     }
 
     public CategoryResponseDTO getCategoryById(long id) {
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new NoSuchCategoryExistsException("No Category exists with the specified ID"));
+        AppUser currentUser = userDetailsService.getCurrentUser();
+        Category category = categoryRepository.findByIdAndUser(id, currentUser)
+                .orElseThrow(() -> new NoSuchCategoryExistsException("Category not found or unauthorized"));
         return CategoryMapper.toDTO(category);
     }
 
-    public CategoryResponseDTO createCategory(CategoryRequestDTO category) {
-        return CategoryMapper.toDTO(categoryRepository.save(CategoryMapper.toEntity(category)));
+    public CategoryResponseDTO createCategory(CategoryRequestDTO dto) {
+        AppUser currentUser = userDetailsService.getCurrentUser();
+        Category category = CategoryMapper.toEntity(dto);
+        category.setUser(currentUser); // Link the entity to the user
+        return CategoryMapper.toDTO(categoryRepository.save(category));
     }
 
 
     public void deleteCategoryById(long id) {
-        categoryRepository.deleteById(id);
+        AppUser currentUser = userDetailsService.getCurrentUser();
+        Category category = categoryRepository.findByIdAndUser(id, currentUser)
+                .orElseThrow(() -> new NoSuchCategoryExistsException("Category not found or unauthorized"));
+        categoryRepository.delete(category);
     }
 
     public CategoryResponseDTO editCategory(long id, CategoryRequestDTO newCategory) {
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new NoSuchCategoryExistsException("No Category exists with the specified ID"));
+        AppUser currentUser = userDetailsService.getCurrentUser();
+        Category category = categoryRepository.findByIdAndUser(id, currentUser)
+                .orElseThrow(() -> new NoSuchCategoryExistsException("Category not found or unauthorized"));
         category.setName(newCategory.getName());
         return CategoryMapper.toDTO(categoryRepository.save(category));
     }

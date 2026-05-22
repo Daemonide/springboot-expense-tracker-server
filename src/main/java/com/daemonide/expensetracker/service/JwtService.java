@@ -3,6 +3,7 @@ package com.daemonide.expensetracker.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value; // Import this
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -14,15 +15,24 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    private static final String SECRET_STRING = "eB7Nf52c103YAAXfg9pbdGArZxIyIDSPL";
-    private final SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_STRING.getBytes());
+    private final SecretKey secretKey;
+    private final long expirationMs;
+
+
+    public JwtService(
+            @Value("${jwt.secret.key}") String secretString,
+            @Value("${jwt.expiration.ms}") long expirationMs
+    ) {
+        this.secretKey = Keys.hmacShaKeyFor(secretString.getBytes());
+        this.expirationMs = expirationMs;
+    }
 
     public String generateToken(String username) {
         return Jwts.builder()
                 .claims(new HashMap<>())
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+                .expiration(new Date(System.currentTimeMillis() + expirationMs)) // Use the injected value
                 .signWith(secretKey)
                 .compact();
     }
@@ -48,5 +58,4 @@ public class JwtService {
                 .getPayload();
         return claimsResolver.apply(claims);
     }
-
 }
