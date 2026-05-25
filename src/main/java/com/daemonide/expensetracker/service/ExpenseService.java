@@ -73,6 +73,7 @@ public class ExpenseService {
         expense.setAmount(updatedExpense.getAmount());
         expense.setDate(updatedExpense.getDate());
         expense.setCategory(category);
+        expense.setStatus(updatedExpense.getStatus());
 
         return ExpenseMapper.toDTO(expenseRepository.save(expense));
     }

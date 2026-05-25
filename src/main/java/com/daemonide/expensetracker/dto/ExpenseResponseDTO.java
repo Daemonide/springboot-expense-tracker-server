@@ -1,19 +1,22 @@
 package com.daemonide.expensetracker.dto;
 
+import com.daemonide.expensetracker.model.ExpenseStatus;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Getter @Setter
+@Getter
+@Setter
 @JsonPropertyOrder({
         "expenseID",
         "title",
         "amount",
         "date",
         "categoryId",
-        "categoryName"
+        "categoryName",
+        "expenseStatus"
 })
 public class ExpenseResponseDTO {
     private long expenseID;
@@ -22,4 +25,5 @@ public class ExpenseResponseDTO {
     private LocalDate date;
     private long categoryId;
     private String categoryName;
+    private ExpenseStatus status;
 }

@@ -35,4 +35,8 @@ public class Expense {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private AppUser user;
+
+    @Enumerated(EnumType.STRING)
+    private ExpenseStatus status;
+
 }

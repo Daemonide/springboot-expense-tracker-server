@@ -33,7 +33,7 @@ public class CategoryService {
     public CategoryResponseDTO createCategory(CategoryRequestDTO dto) {
         AppUser currentUser = userDetailsService.getCurrentUser();
         Category category = CategoryMapper.toEntity(dto);
-        category.setUser(currentUser); // Link the entity to the user
+        category.setUser(currentUser);
         return CategoryMapper.toDTO(categoryRepository.save(category));
     }
 

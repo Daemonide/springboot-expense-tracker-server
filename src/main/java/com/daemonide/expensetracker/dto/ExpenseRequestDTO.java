@@ -1,5 +1,6 @@
 package com.daemonide.expensetracker.dto;
 
+import com.daemonide.expensetracker.model.ExpenseStatus;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,4 +20,5 @@ public class ExpenseRequestDTO {
     private double amount;
     private LocalDate date;
     private long categoryId;
+    private ExpenseStatus status;
 }
