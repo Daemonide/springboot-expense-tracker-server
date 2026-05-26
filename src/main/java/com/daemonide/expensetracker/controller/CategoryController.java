@@ -4,13 +4,14 @@ import com.daemonide.expensetracker.dto.CategoryRequestDTO;
 import com.daemonide.expensetracker.dto.CategoryResponseDTO;
 import com.daemonide.expensetracker.exception.ErrorResponse;
 import com.daemonide.expensetracker.exception.NoSuchCategoryExistsException;
+import com.daemonide.expensetracker.pagination.PaginationRequest;
+import com.daemonide.expensetracker.pagination.PagingResult;
 import com.daemonide.expensetracker.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/categories")
@@ -19,8 +20,23 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public List<CategoryResponseDTO> getCategory() {
-        return categoryService.getAllCategory();
+    public PagingResult<CategoryResponseDTO> getCategory(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(defaultValue = "name") String sortField,
+            @RequestParam(defaultValue = "ASC") String direction,
+            @RequestParam(defaultValue = "false") Boolean fetchAll
+    ) {
+
+        PaginationRequest request = PaginationRequest.builder()
+                .page(page)
+                .size(size)
+                .sortField(sortField)
+                .direction(Sort.Direction.valueOf(direction.toUpperCase()))
+                .fetchAll(fetchAll)
+                .build();
+
+        return categoryService.getAllCategory(request);
     }
 
     @PostMapping

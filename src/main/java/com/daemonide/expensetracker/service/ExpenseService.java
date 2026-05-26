@@ -8,9 +8,14 @@ import com.daemonide.expensetracker.mapper.ExpenseMapper;
 import com.daemonide.expensetracker.model.AppUser;
 import com.daemonide.expensetracker.model.Category;
 import com.daemonide.expensetracker.model.Expense;
+import com.daemonide.expensetracker.pagination.PaginationRequest;
+import com.daemonide.expensetracker.pagination.PaginationUtils;
+import com.daemonide.expensetracker.pagination.PagingResult;
 import com.daemonide.expensetracker.repository.CategoryRepository;
 import com.daemonide.expensetracker.repository.ExpenseRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,14 +48,54 @@ public class ExpenseService {
         return ExpenseMapper.toDTO(expense);
     }
 
-    public List<ExpenseResponseDTO> getAllExpense() {
+    public PagingResult<ExpenseResponseDTO> getAllExpense(PaginationRequest request) {
+
         AppUser currentUser = userDetailsService.getCurrentUser();
-        return ExpenseMapper.toDTOList(expenseRepository.findByUser(currentUser));
+
+        Pageable pageable = PaginationUtils.getPageable(request);
+
+        Page<Expense> expenses = expenseRepository.findByUser(currentUser, pageable);
+
+        List<ExpenseResponseDTO> dtoList =
+                ExpenseMapper.toDTOList(expenses.getContent());
+
+        return new PagingResult<>(
+                dtoList,
+                expenses.getTotalPages(),
+                expenses.getTotalElements(),
+                expenses.getSize(),
+                expenses.getNumber(),
+                expenses.isEmpty(),
+                request.getSortField(),
+                request.getDirection().name()
+        );
     }
 
-    public List<ExpenseResponseDTO> getExpenseByCategory(Category category) {
+    public PagingResult<ExpenseResponseDTO> getExpenseByCategory(
+            Category category,
+            PaginationRequest request
+    ) {
+
         AppUser currentUser = userDetailsService.getCurrentUser();
-        return ExpenseMapper.toDTOList(expenseRepository.findByCategoryAndUser(category, currentUser));
+
+        Pageable pageable = PaginationUtils.getPageable(request);
+
+        Page<Expense> expenses =
+                expenseRepository.findByCategoryAndUser(category, currentUser, pageable);
+
+        List<ExpenseResponseDTO> dtoList =
+                ExpenseMapper.toDTOList(expenses.getContent());
+
+        return new PagingResult<>(
+                dtoList,
+                expenses.getTotalPages(),
+                expenses.getTotalElements(),
+                expenses.getSize(),
+                expenses.getNumber(),
+                expenses.isEmpty(),
+                request.getSortField(),
+                request.getDirection().name()
+        );
     }
 
     public void deleteExpense(Long id) {

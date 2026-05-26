@@ -6,8 +6,13 @@ import com.daemonide.expensetracker.exception.NoSuchCategoryExistsException;
 import com.daemonide.expensetracker.mapper.CategoryMapper;
 import com.daemonide.expensetracker.model.AppUser;
 import com.daemonide.expensetracker.model.Category;
+import com.daemonide.expensetracker.pagination.PaginationRequest;
+import com.daemonide.expensetracker.pagination.PaginationUtils;
+import com.daemonide.expensetracker.pagination.PagingResult;
 import com.daemonide.expensetracker.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,9 +23,30 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final CustomUserDetailsService userDetailsService;
 
-    public List<CategoryResponseDTO> getAllCategory() {
+    public PagingResult<CategoryResponseDTO> getAllCategory(
+            PaginationRequest request
+    ) {
+
         AppUser currentUser = userDetailsService.getCurrentUser();
-        return CategoryMapper.toDTOList(categoryRepository.findByUser(currentUser));
+
+        Pageable pageable = PaginationUtils.getPageable(request);
+
+        Page<Category> categories =
+                categoryRepository.findByUser(currentUser, pageable);
+
+        List<CategoryResponseDTO> dtoList =
+                CategoryMapper.toDTOList(categories.getContent());
+
+        return new PagingResult<>(
+                dtoList,
+                categories.getTotalPages(),
+                categories.getTotalElements(),
+                categories.getSize(),
+                categories.getNumber(),
+                categories.isEmpty(),
+                request.getSortField(),
+                request.getDirection().name()
+        );
     }
 
     public CategoryResponseDTO getCategoryById(long id) {
