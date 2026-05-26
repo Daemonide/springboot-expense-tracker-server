@@ -20,7 +20,7 @@ public class PaginationRequest {
     private String sortField = "id";
 
     @Builder.Default
-    private Sort.Direction direction = Sort.Direction.DESC;
+    private Sort.Direction sortDirection = Sort.Direction.DESC;
 
     @Builder.Default
     private Boolean fetchAll = false;

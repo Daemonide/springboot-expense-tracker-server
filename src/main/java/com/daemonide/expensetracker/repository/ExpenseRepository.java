@@ -24,4 +24,19 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     );
 
     Optional<Expense> findByIdAndUser(Long id, AppUser user);
+
+    @Query("""
+                SELECT e FROM Expense e
+                JOIN e.category c
+                WHERE e.user = :user
+                AND (
+                    coalesce(:search, '') = ''
+                    OR lower(e.title) LIKE lower(concat('%', :search, '%'))
+                )
+            """)
+    Page<Expense> findByUserAndSearch(
+            @Param("user") AppUser user,
+            @Param("search") String search,
+            Pageable pageable
+    );
 }

@@ -20,23 +20,23 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public PagingResult<CategoryResponseDTO> getCategory(
-            @RequestParam(defaultValue = "0") Integer page,
+    public PagingResult<CategoryResponseDTO> getCategories(
+            @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
-            @RequestParam(defaultValue = "name") String sortField,
-            @RequestParam(defaultValue = "ASC") String direction,
-            @RequestParam(defaultValue = "false") Boolean fetchAll
+            @RequestParam(defaultValue = "id") String sortField,
+            @RequestParam(defaultValue = "ASC") String sortDirection,
+            @RequestParam(defaultValue = "false") Boolean fetchAll,
+            @RequestParam(required = false) String search
     ) {
-
         PaginationRequest request = PaginationRequest.builder()
                 .page(page)
                 .size(size)
                 .sortField(sortField)
-                .direction(Sort.Direction.valueOf(direction.toUpperCase()))
+                .sortDirection(Sort.Direction.valueOf(sortDirection.toUpperCase()))
                 .fetchAll(fetchAll)
                 .build();
 
-        return categoryService.getAllCategory(request);
+        return categoryService.getAllCategory(request, search);
     }
 
     @PostMapping

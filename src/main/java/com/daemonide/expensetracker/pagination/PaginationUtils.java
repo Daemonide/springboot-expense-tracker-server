@@ -18,7 +18,7 @@ public class PaginationUtils {
         return PageRequest.of(
                 request.getPage(),
                 request.getSize(),
-                request.getDirection(),
+                request.getSortDirection(),
                 request.getSortField()
         );
     }

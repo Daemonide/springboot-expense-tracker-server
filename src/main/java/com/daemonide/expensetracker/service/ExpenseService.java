@@ -48,13 +48,24 @@ public class ExpenseService {
         return ExpenseMapper.toDTO(expense);
     }
 
-    public PagingResult<ExpenseResponseDTO> getAllExpense(PaginationRequest request) {
+    public PagingResult<ExpenseResponseDTO> getAllExpense(
+            PaginationRequest request,
+            String search
+    ) {
 
         AppUser currentUser = userDetailsService.getCurrentUser();
 
         Pageable pageable = PaginationUtils.getPageable(request);
 
-        Page<Expense> expenses = expenseRepository.findByUser(currentUser, pageable);
+        String searchParam =
+                (search == null || search.isBlank()) ? null : search;
+
+        Page<Expense> expenses =
+                expenseRepository.findByUserAndSearch(
+                        currentUser,
+                        searchParam,
+                        pageable
+                );
 
         List<ExpenseResponseDTO> dtoList =
                 ExpenseMapper.toDTOList(expenses.getContent());
@@ -67,7 +78,7 @@ public class ExpenseService {
                 expenses.getNumber(),
                 expenses.isEmpty(),
                 request.getSortField(),
-                request.getDirection().name()
+                request.getSortDirection().name()
         );
     }
 
@@ -94,7 +105,7 @@ public class ExpenseService {
                 expenses.getNumber(),
                 expenses.isEmpty(),
                 request.getSortField(),
-                request.getDirection().name()
+                request.getSortDirection().name()
         );
     }
 

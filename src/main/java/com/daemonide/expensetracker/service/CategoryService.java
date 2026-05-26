@@ -23,19 +23,16 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final CustomUserDetailsService userDetailsService;
 
-    public PagingResult<CategoryResponseDTO> getAllCategory(
-            PaginationRequest request
-    ) {
-
+    public PagingResult<CategoryResponseDTO> getAllCategory(PaginationRequest request, String search) {
         AppUser currentUser = userDetailsService.getCurrentUser();
-
         Pageable pageable = PaginationUtils.getPageable(request);
 
-        Page<Category> categories =
-                categoryRepository.findByUser(currentUser, pageable);
+        String searchParam =
+                (search == null || search.isBlank()) ? null : search;
 
-        List<CategoryResponseDTO> dtoList =
-                CategoryMapper.toDTOList(categories.getContent());
+        Page<Category> categories = categoryRepository.findByUserAndSearch(currentUser, searchParam, pageable);
+
+        List<CategoryResponseDTO> dtoList = CategoryMapper.toDTOList(categories.getContent());
 
         return new PagingResult<>(
                 dtoList,
@@ -45,7 +42,7 @@ public class CategoryService {
                 categories.getNumber(),
                 categories.isEmpty(),
                 request.getSortField(),
-                request.getDirection().name()
+                request.getSortDirection().name()
         );
     }
 

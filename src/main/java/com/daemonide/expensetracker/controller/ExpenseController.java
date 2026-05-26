@@ -29,22 +29,11 @@ public class ExpenseController {
     }
 
     @GetMapping
-    public PagingResult<ExpenseResponseDTO> getExpense(
-            @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "10") Integer size,
-            @RequestParam(defaultValue = "date") String sortField,
-            @RequestParam(defaultValue = "DESC") String sortDirection,  // was "direction"
-            @RequestParam(defaultValue = "false") Boolean fetchAll
+    public PagingResult<ExpenseResponseDTO> getExpenses(
+            PaginationRequest request,
+            @RequestParam(required = false) String search
     ) {
-        PaginationRequest request = PaginationRequest.builder()
-                .page(page - 1) // convert 1-based from frontend to 0-based for Spring
-                .size(size)
-                .sortField(sortField)
-                .direction(Sort.Direction.valueOf(sortDirection.toUpperCase()))
-                .fetchAll(fetchAll)
-                .build();
-
-        return expenseService.getAllExpense(request);
+        return expenseService.getAllExpense(request, search);
     }
 
     @GetMapping("/category/{categoryId}")
@@ -57,10 +46,10 @@ public class ExpenseController {
             @RequestParam(defaultValue = "false") Boolean fetchAll
     ) {
         PaginationRequest request = PaginationRequest.builder()
-                .page(page - 1)
+                .page(page)
                 .size(size)
                 .sortField(sortField)
-                .direction(Sort.Direction.valueOf(sortDirection.toUpperCase()))
+                .sortDirection(Sort.Direction.valueOf(sortDirection.toUpperCase()))
                 .fetchAll(fetchAll)
                 .build();
 
