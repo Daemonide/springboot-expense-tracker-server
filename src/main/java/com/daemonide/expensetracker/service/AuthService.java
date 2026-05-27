@@ -38,7 +38,9 @@ public class AuthService {
     }
 
     public AuthResponseDTO login(LoginRequestDTO request) {
-
+        if (!turnstileService.verify(request.getCaptchaToken())) {
+            throw new InvalidLoginException("Captcha verification failed");
+        }
         AppUser user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new InvalidLoginException("Invalid Username"));
 
