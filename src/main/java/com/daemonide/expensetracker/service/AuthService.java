@@ -17,8 +17,12 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
     private final JwtService jwtService;
+    private final TurnstileService turnstileService;
 
     public String register(RegisterRequestDTO request) {
+        if (!turnstileService.verify(request.getCaptchaToken())) {
+            throw new InvalidLoginException("Captcha verification failed");
+        }
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new UserAlreadyExistsException("This username is taken");
         }
@@ -32,6 +36,9 @@ public class AuthService {
     }
 
     public String login(LoginRequestDTO request) {
+        if (!turnstileService.verify(request.getCaptchaToken())) {
+            throw new InvalidLoginException("Captcha verification failed");
+        }
 
         AppUser user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new InvalidLoginException("Invalid Username"));

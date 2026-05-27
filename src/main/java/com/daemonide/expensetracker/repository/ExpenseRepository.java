@@ -6,13 +6,14 @@ import com.daemonide.expensetracker.model.Expense;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface ExpenseRepository extends JpaRepository<Expense, Long> {
-
+public interface ExpenseRepository extends JpaRepository<Expense, Long>,
+        JpaSpecificationExecutor<Expense> {
     @Query("SELECT e FROM Expense e JOIN e.category c WHERE e.user = :user")
     Page<Expense> findByUser(@Param("user") AppUser user, Pageable pageable);
 

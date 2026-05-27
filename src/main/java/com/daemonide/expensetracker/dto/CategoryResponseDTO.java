@@ -8,9 +8,11 @@ import lombok.Setter;
 @Setter
 @JsonPropertyOrder({
         "categoryId",
-        "name"
+        "name",
+        "expenseCount"
 })
 public class CategoryResponseDTO {
     long categoryId;
     String name;
+    private Long expenseCount;
 }

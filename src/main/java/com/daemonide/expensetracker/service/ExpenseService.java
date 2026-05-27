@@ -13,11 +13,14 @@ import com.daemonide.expensetracker.pagination.PaginationUtils;
 import com.daemonide.expensetracker.pagination.PagingResult;
 import com.daemonide.expensetracker.repository.CategoryRepository;
 import com.daemonide.expensetracker.repository.ExpenseRepository;
+import com.daemonide.expensetracker.specification.ExpenseSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -50,36 +53,27 @@ public class ExpenseService {
 
     public PagingResult<ExpenseResponseDTO> getAllExpense(
             PaginationRequest request,
-            String search
+            String search,
+            String status,
+            Long categoryId,
+            String dateFrom,
+            String dateTo
     ) {
-
         AppUser currentUser = userDetailsService.getCurrentUser();
+        Pageable pageable = PaginationUtils.getPageable(resolveSortField(request));
 
-        PaginationRequest resolved = PaginationRequest.builder()
-                .page(request.getPage())
-                .size(request.getSize())
-                .sortField(resolveSortField(request.getSortField()))
-                .sortDirection(request.getSortDirection())
-                .fetchAll(request.getFetchAll())
-                .build();
+        LocalDate from = (dateFrom != null && !dateFrom.isBlank()) ? LocalDate.parse(dateFrom) : null;
+        LocalDate to = (dateTo != null && !dateTo.isBlank()) ? LocalDate.parse(dateTo) : null;
 
-        Pageable pageable = PaginationUtils.getPageable(resolved);
+        String searchParam = (search == null || search.isBlank()) ? null : search;
 
-        String searchParam =
-                (search == null || search.isBlank()) ? null : search;
-
-        Page<Expense> expenses =
-                expenseRepository.findByUserAndSearch(
-                        currentUser,
-                        searchParam,
-                        pageable
-                );
-
-        List<ExpenseResponseDTO> dtoList =
-                ExpenseMapper.toDTOList(expenses.getContent());
+        Page<Expense> expenses = expenseRepository.findAll(
+                ExpenseSpecification.build(currentUser, searchParam, status, categoryId, from, to),
+                pageable
+        );
 
         return new PagingResult<>(
-                dtoList,
+                ExpenseMapper.toDTOList(expenses.getContent()),
                 expenses.getTotalPages(),
                 expenses.getTotalElements(),
                 expenses.getSize(),
@@ -88,6 +82,20 @@ public class ExpenseService {
                 request.getSortField(),
                 request.getSortDirection().name()
         );
+    }
+
+    // Keep this helper from the status-sort task
+    private PaginationRequest resolveSortField(PaginationRequest request) {
+        if ("status".equalsIgnoreCase(request.getSortField())) {
+            return PaginationRequest.builder()
+                    .page(request.getPage())
+                    .size(request.getSize())
+                    .sortField("statusOrder")
+                    .sortDirection(request.getSortDirection())
+                    .fetchAll(request.getFetchAll())
+                    .build();
+        }
+        return request;
     }
 
     public PagingResult<ExpenseResponseDTO> getExpenseByCategory(

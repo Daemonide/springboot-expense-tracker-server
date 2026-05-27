@@ -31,9 +31,13 @@ public class ExpenseController {
     @GetMapping
     public PagingResult<ExpenseResponseDTO> getExpenses(
             PaginationRequest request,
-            @RequestParam(required = false) String search
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) String dateFrom,
+            @RequestParam(required = false) String dateTo
     ) {
-        return expenseService.getAllExpense(request, search);
+        return expenseService.getAllExpense(request, search, status, categoryId, dateFrom, dateTo);
     }
 
     @GetMapping("/category/{categoryId}")

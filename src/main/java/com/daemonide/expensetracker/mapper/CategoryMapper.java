@@ -11,6 +11,7 @@ public class CategoryMapper {
         CategoryResponseDTO dto = new CategoryResponseDTO();
         dto.setCategoryId(category.getId());
         dto.setName(category.getName());
+        dto.setExpenseCount(category.getExpenseCount());
         return dto;
     }
 
