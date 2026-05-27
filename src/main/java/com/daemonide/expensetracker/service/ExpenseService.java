@@ -55,7 +55,15 @@ public class ExpenseService {
 
         AppUser currentUser = userDetailsService.getCurrentUser();
 
-        Pageable pageable = PaginationUtils.getPageable(request);
+        PaginationRequest resolved = PaginationRequest.builder()
+                .page(request.getPage())
+                .size(request.getSize())
+                .sortField(resolveSortField(request.getSortField()))
+                .sortDirection(request.getSortDirection())
+                .fetchAll(request.getFetchAll())
+                .build();
+
+        Pageable pageable = PaginationUtils.getPageable(resolved);
 
         String searchParam =
                 (search == null || search.isBlank()) ? null : search;
@@ -132,5 +140,12 @@ public class ExpenseService {
         expense.setStatus(updatedExpense.getStatus());
 
         return ExpenseMapper.toDTO(expenseRepository.save(expense));
+    }
+
+    private String resolveSortField(String sortField) {
+        if ("status".equalsIgnoreCase(sortField)) {
+            return "statusOrder";
+        }
+        return sortField;
     }
 }

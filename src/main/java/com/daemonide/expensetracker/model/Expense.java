@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Formula;
 
 import java.time.LocalDate;
 
@@ -38,5 +39,15 @@ public class Expense {
 
     @Enumerated(EnumType.STRING)
     private ExpenseStatus status;
+
+    @Formula("""
+                CASE status
+                    WHEN 'DONE'        THEN 1
+                    WHEN 'IN_PROGRESS' THEN 2
+                    WHEN 'PENDING'     THEN 3
+                    WHEN 'CANCELLED'   THEN 4
+                END
+            """)
+    private Integer statusOrder;
 
 }
