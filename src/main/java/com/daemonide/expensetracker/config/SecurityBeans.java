@@ -37,6 +37,11 @@ public class SecurityBeans {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+
+                .cors(cors -> cors
+                        .configurationSource(corsConfigurationSource())
+                )
+
                 .csrf(AbstractHttpConfigurer::disable)
 
                 .headers(headers -> headers
@@ -52,7 +57,11 @@ public class SecurityBeans {
                 )
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/register", "/auth/login").permitAll()
+                        .requestMatchers(
+                                "/auth/register",
+                                "/auth/login",
+                                "/auth/refresh"
+                        ).permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -74,7 +83,7 @@ public class SecurityBeans {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://expensetracker-frontend.daemonide-sys.workers.dev"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

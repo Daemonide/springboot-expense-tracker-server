@@ -2,6 +2,7 @@ package com.daemonide.expensetracker.controller;
 
 import com.daemonide.expensetracker.dto.AuthResponseDTO;
 import com.daemonide.expensetracker.dto.LoginRequestDTO;
+import com.daemonide.expensetracker.dto.RefreshRequestDTO;
 import com.daemonide.expensetracker.dto.RegisterRequestDTO;
 import com.daemonide.expensetracker.exception.ErrorResponse;
 import com.daemonide.expensetracker.exception.InvalidLoginException;
@@ -25,7 +26,14 @@ public class UserController {
 
     @PostMapping("/login")
     public AuthResponseDTO login(@RequestBody LoginRequestDTO request) {
-        return new AuthResponseDTO(authService.login(request));
+        return authService.login(request);
+    }
+
+    @PostMapping("/refresh")
+    public AuthResponseDTO refresh(
+            @RequestBody RefreshRequestDTO request
+    ) {
+        return authService.refresh(request);
     }
 
     @ExceptionHandler(value = InvalidLoginException.class)

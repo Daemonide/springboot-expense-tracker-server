@@ -1,6 +1,8 @@
 package com.daemonide.expensetracker.service;
 
+import com.daemonide.expensetracker.dto.AuthResponseDTO;
 import com.daemonide.expensetracker.dto.LoginRequestDTO;
+import com.daemonide.expensetracker.dto.RefreshRequestDTO;
 import com.daemonide.expensetracker.dto.RegisterRequestDTO;
 import com.daemonide.expensetracker.exception.InvalidLoginException;
 import com.daemonide.expensetracker.exception.UserAlreadyExistsException;
@@ -35,10 +37,7 @@ public class AuthService {
         return "User Registered";
     }
 
-    public String login(LoginRequestDTO request) {
-        if (!turnstileService.verify(request.getCaptchaToken())) {
-            throw new InvalidLoginException("Captcha verification failed");
-        }
+    public AuthResponseDTO login(LoginRequestDTO request) {
 
         AppUser user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new InvalidLoginException("Invalid Username"));
@@ -52,6 +51,34 @@ public class AuthService {
             throw new InvalidLoginException("Invalid Password");
         }
 
-        return jwtService.generateToken(user.getUsername());
+        String accessToken = jwtService.generateToken(user.getUsername());
+        String refreshToken = jwtService.generateRefreshToken(user.getUsername());
+
+        return new AuthResponseDTO(accessToken, refreshToken);
+    }
+
+    public AuthResponseDTO refresh(RefreshRequestDTO request) {
+
+        try {
+            String refreshToken = request.getRefreshToken();
+
+            String username =
+                    jwtService.extractUsername(refreshToken);
+
+            if (jwtService.isTokenExpired(refreshToken)) {
+                throw new RuntimeException("Refresh token expired");
+            }
+
+            String newAccessToken =
+                    jwtService.generateToken(username);
+
+            return new AuthResponseDTO(
+                    newAccessToken,
+                    refreshToken
+            );
+
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid refresh token");
+        }
     }
 }
