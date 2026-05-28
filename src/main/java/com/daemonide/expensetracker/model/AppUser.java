@@ -15,12 +15,16 @@ import java.util.Collection;
 @Entity
 @Table(name = "USERS")
 public class AppUser implements UserDetails {
+
     @Id
     @GeneratedValue
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String username;
+
+    @Column(unique = true, nullable = false)
+    private String email;
 
     private String password;
 
@@ -30,17 +34,14 @@ public class AppUser implements UserDetails {
         return new ArrayList<>();
     }
 
-
     @Override
     public String getPassword() {
         return password;
     }
-
 
     @Override
     @NonNull
     public String getUsername() {
         return username;
     }
-
 }
