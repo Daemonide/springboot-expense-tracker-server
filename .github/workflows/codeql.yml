@@ -10,7 +10,7 @@ on:
 
 jobs:
   analyze:
-    name: Analyze (${{ matrix.language }})
+    name: Analyze (java-kotlin)
     runs-on: ubuntu-latest
     permissions:
       security-events: write
@@ -18,47 +18,36 @@ jobs:
       actions: read
       contents: read
 
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - language: java-kotlin
-            build-mode: autobuild
-          - language: javascript-typescript
-            build-mode: none
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Required for Spring Boot — lets CodeQL actually compile and analyze bytecode.
-      # Change 21 to whichever Java version your project targets.
+      # Change java-version to match your pom.xml / build.gradle (e.g. '17', '21')
+      # Change cache to 'gradle' if you use Gradle instead of Maven
       - name: Set up Java
-        if: matrix.language == 'java-kotlin'
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
-          cache: maven   # or 'gradle' if you use Gradle
+          cache: maven
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
         with:
-          languages: ${{ matrix.language }}
-          build-mode: ${{ matrix.build-mode }}
+          languages: java-kotlin
+          build-mode: autobuild
           # security-extended adds SQL injection, path traversal, SSRF etc.
-          # Highly recommended for a Spring Boot + Postgres stack.
+          # Important for a Spring Boot + Postgres stack.
           queries: security-extended
 
-      # autobuild handles Maven and Gradle automatically.
-      # If it fails, switch build-mode to 'manual' above and use the step below instead:
+      # If autobuild fails, switch build-mode above to 'manual' and
+      # uncomment the step below:
       #
       # - name: Manual build
-      #   if: matrix.language == 'java-kotlin'
       #   run: ./mvnw clean package -DskipTests
       #   # or: ./gradlew build -x test
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
         with:
-          category: "/language:${{matrix.language}}"
+          category: "/language:java-kotlin"
